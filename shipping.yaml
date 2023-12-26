@@ -1,6 +1,9 @@
 - name: shipping component
   hosts: shipping
   become: yes
+  vars:
+    mysql_password: RoboShop@1
+    
   tasks:
   - name: install maven
     ansible.builtin.package:
