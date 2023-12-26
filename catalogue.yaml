@@ -6,6 +6,27 @@
       ansible.builtin.shell: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
   
     - name: Install Node JS
-      ansible.builtin.package:
+      ansible.builtin.dnf:
         name: nodejs
         state: present
+
+    - name: Add user
+      ansible.builtin.user:
+        name: roboshop
+
+    - name: create directory
+      ansible.builtin.file:
+        name: /app
+        state: directory
+
+    - name: Download appliacation code
+      ansible.builtin.geturl:
+        url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+        dist: /tmp
+      
+    - name: unzip the file
+      ansible.builtin.unarchive:
+        src: /tmp/catalogue.zip
+        dest: /app
+
+    
