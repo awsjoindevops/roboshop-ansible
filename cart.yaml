@@ -1,5 +1,5 @@
-- name: Catalogue Scripts 
-  hosts: catalogue
+- name: cart Scripts 
+  hosts: cart
   become: yes
   tasks:
     - name: Disable old nodeJS and enable nodejs
@@ -26,12 +26,12 @@
 
     - name: Download appliacation code
       ansible.builtin.get_url:
-        url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
+        url: https://roboshop-builds.s3.amazonaws.com/cart.zip
         dest: /tmp
       
     - name: unzip the file
       ansible.builtin.unarchive:
-        src: /tmp/catalogue.zip
+        src: /tmp/cart.zip
         dest: /app
         remote_src: yes
 
@@ -40,20 +40,19 @@
       args:
         chdir: /app
 
-    - name: copy catalogue repo
+    - name: copy cart repo
       ansible.builtin.copy:
-        src: catalogue.service
-        dest: /etc/systemd/system/catalogue.service
+        src: cart.service
+        dest: /etc/systemd/system/cart.service
 
     - name: demon reload and start
       ansible.builtin.systemd_service:
         daemon_reload: true
-
     
 
-    - name: start and enable catalog db
+    - name: start and enable cart db
       ansible.builtin.service:
-        name: catalogue
+        name: cart
         state: restarted
         enabled: yes
     
