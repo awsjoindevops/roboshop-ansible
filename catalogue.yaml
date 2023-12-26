@@ -64,7 +64,7 @@
       register: product_count
 
     - name: print the count
-      ansible.builtin.debug
+      ansible.builtin.debug:
         msg: "product count is {{product_count}}""
 
 
