@@ -1,0 +1,11 @@
+- name: Catalogue Scripts 
+  hosts: catalogue
+  become: yes
+  tasks:
+    - name: Disable old nodeJS and enable node js 18
+      ansible.builtin.command: dnf module disable nodejs -y ; dnf module enable nodejs:18 -y
+  
+    - name: Install Node JS
+      ansible.builtin.package:
+        name: nodejs
+        state: present
