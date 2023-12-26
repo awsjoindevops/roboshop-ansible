@@ -58,7 +58,7 @@
 
   - name: check cities schema exists or not
     ansible.builtin.command:  mysql -h mysql.daws76s.online -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
-      register: schema
+    register: schema
 
   - name: print output
     ansible.builtin.debug:
@@ -66,7 +66,7 @@
 
   - name: load cities data
     ansible.builtin.shell: "mysql -h mysql.daws76s.online -uroot -p{{mysql_password}}  < /app/schema/shipping.sql"
-      when: schema.stdout != "1"
+    when: schema.stdout != "1"
 
   - name: start and enable shipping
     ansible.builtin.service:
