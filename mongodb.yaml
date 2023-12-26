@@ -29,3 +29,7 @@
       name: mongod
       state: restarted
     
+  - name: Install MongoDB client
+    ansible.builtin.package:
+      name: mongodb-org-shell
+      state: present
