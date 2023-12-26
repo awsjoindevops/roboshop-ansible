@@ -7,69 +7,69 @@
       name: maven
       state: present
   
-   - name: Add user
-      ansible.builtin.user:
+  - name: Add user
+    ansible.builtin.user:
         name: roboshop
 
-    - name: recursively remove app directory
+  - name: recursively remove app directory
       ansible.builtin.file:
         path: /app
         state: absent
 
-    - name: create directory
-      ansible.builtin.file:
-        name: /app
-        state: directory
+  - name: create directory
+    ansible.builtin.file:
+      name: /app
+      state: directory
 
-    - name: Download appliacation code
-      ansible.builtin.get_url:
-        url: https://roboshop-builds.s3.amazonaws.com/shipping.zip
-        dest: /tmp
+  - name: Download appliacation code
+    ansible.builtin.get_url:
+      url: https://roboshop-builds.s3.amazonaws.com/shipping.zip
+      dest: /tmp
       
-    - name: unzip the file
-      ansible.builtin.unarchive:
-        src: /tmp/shipping.zip
-        dest: /app
-        remote_src: yes
+  - name: unzip the file
+    ansible.builtin.unarchive:
+      src: /tmp/shipping.zip
+      dest: /app
+      remote_src: yes
 
-    - name: install dependencies
-      ansible.builtin.command: mvn clean package
+  - name: install dependencies
+    ansible.builtin.command: mvn clean package
       args:
-        chdir: /app
+      chdir: /app
 
-    - name: rename jar file
-      ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar
-      args:
-        chdir: /app
+  - name: rename jar file
+    ansible.builtin.command: mv target/shipping-1.0.jar shipping.jar
+    args:
+      chdir: /app
 
-    - name: copy shipping service
-      ansible.builtin.copy:
-        src: shipping.service
-        dest: /etc/systemd/system/shipping.service
+  - name: copy shipping service
+    ansible.builtin.copy:
+      src: shipping.service
+      dest: /etc/systemd/system/shipping.service
 
-    - name: demon reload and start
-      ansible.builtin.systemd_service:
-        daemon_reload: true
+  - name: demon reload and start
+    ansible.builtin.systemd_service:
+      daemon_reload: true
 
-    - name: install maven
-      ansible.builtin.package:
-        name: mysql
-        state: present
+  - name: install maven
+    ansible.builtin.package:
+      name: mysql
+      state: present
 
-    - name: check cities schema exists or not
-      ansible.builtin.command:  mysql -h mysql.daws76s.online -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
-        register: schema
+  - name: check cities schema exists or not
+    ansible.builtin.command:  mysql -h mysql.daws76s.online -uroot -p{{mysql_password}} -sN -e "SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'cities'"
+      register: schema
 
-    - name: print output
-      ansible.builtin.debug:
-        msg: "schema output: {{schema}}"
+  - name: print output
+    ansible.builtin.debug:
+      msg: "schema output: {{schema}}"
 
-    - name: load cities data
-      ansible.builtin.shell: "mysql -h mysql.daws76s.online -uroot -p{{mysql_password}}  < /app/schema/shipping.sql"
-        when: schema.stdout != "1"
+  - name: load cities data
+    ansible.builtin.shell: "mysql -h mysql.daws76s.online -uroot -p{{mysql_password}}  < /app/schema/shipping.sql"
+      when: schema.stdout != "1"
 
-    - name: start and enable shipping
-      ansible.builtin.service:
-        name: shipping
-        state: restarted
-        enabled: yes
+  - name: start and enable shipping
+    ansible.builtin.service:
+      name: shipping
+      state: restarted
+      enabled: yes
