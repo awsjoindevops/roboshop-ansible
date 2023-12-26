@@ -1,5 +1,5 @@
-- name: user Scripts 
-  hosts: user
+- name: Catalogue Scripts 
+  hosts: catalogue
   become: yes
   tasks:
     - name: Disable old nodeJS and enable nodejs
@@ -26,12 +26,12 @@
 
     - name: Download appliacation code
       ansible.builtin.get_url:
-        url: https://roboshop-builds.s3.amazonaws.com/user.zip
+        url: https://roboshop-builds.s3.amazonaws.com/catalogue.zip
         dest: /tmp
       
     - name: unzip the file
       ansible.builtin.unarchive:
-        src: /tmp/user.zip
+        src: /tmp/catalogue.zip
         dest: /app
         remote_src: yes
 
@@ -40,45 +40,20 @@
       args:
         chdir: /app
 
-    - name: copy user repo
+    - name: copy catalogue repo
       ansible.builtin.copy:
-        src: user.service
-        dest: /etc/systemd/system/user.service
+        src: catalogue.service
+        dest: /etc/systemd/system/catalogue.service
 
     - name: demon reload and start
       ansible.builtin.systemd_service:
         daemon_reload: true
-        #state: started
-
-
-        # lets start after data is loaded
-
-    - name: copy mongodb repo
-      ansible.builtin.copy:
-        src: mongodb.repo
-        dest: /etc/yum.repos.d/mongodb.repo
 
     
-    - name: Install MongoDB client
-      ansible.builtin.package:
-        name: mongodb-org-shell
-        state: present
-  
-    - name: get the user count
-      ansible.builtin.command: mongo --host mongodb.awsjoindevops.online --quiet --eval 'db = db.getSiblingDB("users"); db.users.count()'
-      register: user_count
 
-#    - name: print the count
-#      ansible.builtin.debug:
-#        msg: "product count is {{product_count}}"
-
-    - name: load user data
-      ansible.builtin.command: mongo --host mongodb.awsjoindevops.online < /app/schema/user.js
-      when: user_count.stdout == "0"
-    
-    - name: start and enable user db
+    - name: start and enable catalog db
       ansible.builtin.service:
-        name: user
+        name: catalogue
         state: restarted
         enabled: yes
     
